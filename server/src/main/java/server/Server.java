@@ -56,7 +56,21 @@ public class Server {
             c.sendMsg(message);
         }
     }
+    public void privatMsg(ClientHandler sender, String msg, String receiver){
+        String message = String.format("[%s] to [%s] : %s", sender.getNickname(), receiver, msg);
+        for (ClientHandler c : clients) {
+            if (c.getNickname().equals(receiver)){
+                c.sendMsg(message);
+                if (sender.equals(c)){
+                    return;
+                }
+                sender.sendMsg(message);
+                return;
+            }
 
+        }
+        sender.sendMsg("Не найдено пользователя с таким именем.");
+    }
     public void subscribe(ClientHandler clientHandler){
         clients.add(clientHandler);
     }
