@@ -37,10 +37,10 @@ public class ClientHandler {
                                     .getNicknameByLoginAndPassword(token[1], token[2]);
                             if (newNick != null) {
                                 nickname = newNick;
-                                sendMsg("/auth_ok "+ nickname);
+                                sendMsg("/auth_ok " + nickname);
                                 server.subscribe(this);
-                                System.out.println("Client authenticated. nick: "+ nickname +
-                                        " Address: "+ socket.getRemoteSocketAddress());
+                                System.out.println("Client authenticated. nick: " + nickname +
+                                        " Address: " + socket.getRemoteSocketAddress());
                                 break;
                             } else {
                                 sendMsg("Неверный логин / пароль");
@@ -52,12 +52,20 @@ public class ClientHandler {
                     //цикл работы
                     while (true) {
                         String str = in.readUTF();
-
-                        if (str.equals("/end")) {
-                            out.writeUTF("/end");
-                            break;
+                        if (str.startsWith("/")) {
+                            if (str.equals("/end")) {
+                                out.writeUTF("/end");
+                                break;
+                            }
+                            if (str.startsWith("/w")) {
+                                String[] token = str.split("\\s+", 3);
+                                server.privatMsg(this, token[1], token[2]);
+                            }
+                        } else {
+                            server.broadcastMsg(this, str);
                         }
-                        server.broadcastMsg(this, str);
+
+
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
